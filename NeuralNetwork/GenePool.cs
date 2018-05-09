@@ -48,7 +48,7 @@ namespace NeuralNetwork
         {
             _individuals = ascending ?
                 _individuals.OrderByDescending(i => i.fitness).ToList() :
-                _individuals.OrderBy(i => i.fitness).ToList() ;
+                _individuals.OrderBy(i => i.fitness).ToList();
         }
 
         private Individual MakeChild()
