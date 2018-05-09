@@ -23,6 +23,7 @@ namespace NeuralNetwork
 
             _layerConfiguration = layerConfig;
 
+            // Create random biases
             for (int i = 0; i < layerConfig.Length - 1; i++)
             {
                 _biases[i] = new float[layerConfig[i + 1]];
@@ -32,6 +33,7 @@ namespace NeuralNetwork
                 }
             }
 
+            // Create random weights
             _weights = new float[layerConfig.Length - 1][][];
             for (int i = 0; i < layerConfig.Length - 1; i++)
             {
