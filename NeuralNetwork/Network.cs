@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace NeuralNetwork
 {
-    class Network
+    public class Network
     {
         private int[] _layerConfiguration;
         private float[][][] _weights;
