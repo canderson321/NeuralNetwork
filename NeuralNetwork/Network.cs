@@ -24,6 +24,7 @@ namespace NeuralNetwork
             _layerConfiguration = layerConfig;
 
             // Create random biases
+            _biases = new float[layerConfig.Length - 1][];
             for (int i = 0; i < layerConfig.Length - 1; i++)
             {
                 _biases[i] = new float[layerConfig[i + 1]];

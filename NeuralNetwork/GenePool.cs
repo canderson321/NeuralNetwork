@@ -18,6 +18,9 @@ namespace NeuralNetwork
         private int _generation = 0;
         private List<Individual> _individuals = new List<Individual>();
 
+        public List<Individual> Individuals { get => _individuals; }
+        public int Generation { get => _generation; }
+
         public void Initialize(int[] layerConfiguration)
         {
             for (int i = 0; i < PoolSize; i++)
@@ -26,7 +29,7 @@ namespace NeuralNetwork
             }
         }
 
-        public void NexGeneration()
+        public void NextGeneration()
         {
             if (UseAdaptiveMutationRate)
                 MutationRate *= MutationsPerIndividual / ((float)(_numMutations + 1) / PoolSize);
@@ -39,6 +42,13 @@ namespace NeuralNetwork
                 nextGeneration.Add(MakeChild());
             }
             _individuals = nextGeneration;
+        }
+
+        public void SortByFitness(bool ascending = true)
+        {
+            _individuals = ascending ?
+                _individuals.OrderByDescending(i => i.fitness).ToList() :
+                _individuals.OrderBy(i => i.fitness).ToList() ;
         }
 
         private Individual MakeChild()
@@ -119,7 +129,7 @@ namespace NeuralNetwork
             {
                 selections[i] = Utils.Random.Next(0, PoolSize);
             }
-            return _individuals[selections.Max()];
+            return _individuals[selections.Min()];
         }
     }
 
