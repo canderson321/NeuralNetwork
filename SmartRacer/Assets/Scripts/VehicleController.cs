@@ -5,7 +5,13 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
 public class VehicleController : MonoBehaviour {
 
-    public float WheelAngle;
+    
+    public float DriveValue = 0;
+    public float SteerValue = 0;
+
+   // private float wheelAngle = 0;
+
+
     public Transform FrontWheels;
     public Transform RearWheels;
     private float wheelWidth;
@@ -31,13 +37,6 @@ public class VehicleController : MonoBehaviour {
         Debug.Log("A: " + q * v);
     }
 	
-	// Update is called once per frame
-	void Update () {
-        if (Input.GetKey(KeyCode.A)) WheelAngle = -MaxTurnAngle;
-        else if (Input.GetKey(KeyCode.D)) WheelAngle = MaxTurnAngle;
-        else WheelAngle = 0;
-    }
-
     private Vector3 GetWheelForce(Vector3 forward, Vector3 currentVelocity, bool isDriveWheel = false)
     {
         Quaternion rotationToForward = Quaternion.LookRotation(forward);
@@ -46,8 +45,7 @@ public class VehicleController : MonoBehaviour {
         force.x = -relaviteVelocity.x * SideWheelFriction;
         force.z = -relaviteVelocity.z * ForwardWheelFriction;
 
-        if (isDriveWheel && Input.GetKey(KeyCode.W)) force.z += Acceleration;
-        if (isDriveWheel && Input.GetKey(KeyCode.S)) force.z -= Acceleration;
+        if (isDriveWheel) force.z += Acceleration * DriveValue;
 
         return rotationToForward * force;
 
@@ -57,7 +55,7 @@ public class VehicleController : MonoBehaviour {
 
     public void FixedUpdate()
     {
-        Vector3 FrontForward = Quaternion.Euler(0, WheelAngle, 0) * FrontWheels.forward;
+        Vector3 FrontForward = Quaternion.Euler(0, SteerValue * MaxTurnAngle, 0) * FrontWheels.forward;
         Vector3 FrontForce = GetWheelForce(FrontForward, rb.GetPointVelocity(FrontWheels.position), true);
         rb.AddForceAtPosition(FrontForce, FrontWheels.position);
 
