@@ -44,11 +44,11 @@ namespace NeuralNetwork
             _individuals = nextGeneration;
         }
 
-        public void SortByFitness(bool ascending = true)
+        public void SortByFitness(bool ascending = false)
         {
             _individuals = ascending ?
-                _individuals.OrderByDescending(i => i.fitness).ToList() :
-                _individuals.OrderBy(i => i.fitness).ToList();
+                _individuals.OrderBy(i => i.fitness).ToList() :
+                _individuals.OrderByDescending(i => i.fitness).ToList();
         }
 
         private Individual MakeChild()
@@ -127,7 +127,7 @@ namespace NeuralNetwork
             int[] selections = new int[10];
             for (int i = 0; i < 10; i++)
             {
-                selections[i] = Utils.Random.Next(0, PoolSize);
+                selections[i] = Utils.Random.Next(0, _individuals.Count);
             }
             return _individuals[selections.Min()];
         }
@@ -135,8 +135,22 @@ namespace NeuralNetwork
 
     public class Individual : Network
     {
-        public Individual(int[] LayerSizes) : base(LayerSizes) { }
-        public Individual(float[][][] weights, float[][] biases) : base(weights, biases) { }
+        public Individual(int[] LayerSizes) : base(LayerSizes)
+        {
+            LayerConfiguration = GetLayerConfiguration();
+            NumInputs = LayerConfiguration[0];
+            NumOutputs = LayerConfiguration[LayerConfiguration.Length - 1];
+        }
+        public Individual(float[][][] weights, float[][] biases) : base(weights, biases)
+        {
+            LayerConfiguration = GetLayerConfiguration();
+            NumInputs = LayerConfiguration[0];
+            NumOutputs = LayerConfiguration[LayerConfiguration.Length - 1];
+        }
+
+        public int[] LayerConfiguration;
+        public int NumInputs { get; private set; }
+        public int NumOutputs { get; private set; }
         public float fitness = 0;
     }
 }

@@ -14,7 +14,7 @@ public class VehicleController : MonoBehaviour {
 
     public Transform FrontWheels;
     public Transform RearWheels;
-    private float wheelWidth;
+    //private float wheelWidth;
 
     private Rigidbody rb;
 
@@ -24,26 +24,19 @@ public class VehicleController : MonoBehaviour {
     public float ForwardWheelFriction = 0.2f;
     public float SideWheelFriction = 0.8f;
 
+
 	// Use this for initialization
 	void Start () {
         rb = GetComponent<Rigidbody>();
-        wheelWidth = transform.localScale.x;
-
-        Vector3 v = new Vector3(0, 0, 1).normalized;
-        Vector3 f = new Vector3(1, 0, 0).normalized;
-
-        Quaternion q = Quaternion.Inverse(Quaternion.LookRotation(f));
-
-        Debug.Log("A: " + q * v);
     }
 	
     private Vector3 GetWheelForce(Vector3 forward, Vector3 currentVelocity, bool isDriveWheel = false)
     {
         Quaternion rotationToForward = Quaternion.LookRotation(forward);
-        Vector3 relaviteVelocity = Quaternion.Inverse(rotationToForward) * currentVelocity;
+        Vector3 relativeVelocity = Quaternion.Inverse(rotationToForward) * currentVelocity;
         Vector3 force = Vector3.zero;
-        force.x = -relaviteVelocity.x * SideWheelFriction;
-        force.z = -relaviteVelocity.z * ForwardWheelFriction;
+        force.x = -relativeVelocity.x * SideWheelFriction;
+        force.z = -relativeVelocity.z * ForwardWheelFriction;
 
         if (isDriveWheel) force.z += Acceleration * DriveValue;
 
@@ -55,6 +48,9 @@ public class VehicleController : MonoBehaviour {
 
     public void FixedUpdate()
     {
+        DriveValue = Mathf.Clamp(DriveValue, - 1f, 1);
+        SteerValue = Mathf.Clamp(SteerValue, - 1f, 1);
+
         Vector3 FrontForward = Quaternion.Euler(0, SteerValue * MaxTurnAngle, 0) * FrontWheels.forward;
         Vector3 FrontForce = GetWheelForce(FrontForward, rb.GetPointVelocity(FrontWheels.position), true);
         rb.AddForceAtPosition(FrontForce, FrontWheels.position);
