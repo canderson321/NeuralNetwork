@@ -22,8 +22,8 @@ namespace NeuralNetwork
                 throw new Exception("Layer sizes must be greater than zero.");
 
             _layerConfiguration = layerConfig;
-            _weights = Utils.FillWeightArray(layerConfig, (a, b, c) => Utils.PositiveFloat);
-            _biases = Utils.FillBiasArray(layerConfig, (a, b) => Utils.PositiveFloat);
+            _weights = Utils.FillWeightArray(layerConfig, (a, b, c) => Utils.NomalizedFloat);
+            _biases = Utils.FillBiasArray(layerConfig, (a, b) => Utils.NomalizedFloat);
         }
 
         public Network(float[][][] weights, float[][] biases)
@@ -64,9 +64,11 @@ namespace NeuralNetwork
         /*****************************************************************************
         | BACK PROPAGATION                                                           |
         *****************************************************************************/
-        public void ApplyTrainingData(float[] inputs, float[] outputs, float learningRate) => ApplyTrainingData(new float[][][] { new float[][] { inputs }, new float[][] { outputs } }, learningRate);
-        public void ApplyTrainingData(float[][][] trainingData, float learningRate)
+        public void ApplyTrainingData(float[] inputs, float[] outputs, float learningRate, Action<object> print = null) => ApplyTrainingData(new float[][][] { new float[][] { inputs }, new float[][] { outputs } }, learningRate, print);
+        public void ApplyTrainingData(float[][][] trainingData, float learningRate, Action<object> print = null)
         {
+            //print("length: " + trainingData[0].Length);
+
             if (trainingData.Length != 2) throw new Exception("training data must contain inputs[][] and outputs[][]");
             if (trainingData[0].Length != trainingData[1].Length) throw new Exception("inputs and outputs differ in length");
 
@@ -76,22 +78,26 @@ namespace NeuralNetwork
 
             for (int i = 0; i < trainingData[0].Length; i++)
             {
-                Network deltas = BackProp(trainingData[0][i], trainingData[1][i]);
+                Network deltas = BackProp(trainingData[0][i], trainingData[1][i], print);
                 float[][][] deltaWeightGradient = deltas._weights;
                 float[][] deltaBiasGradient = deltas._biases;
 
-                //Console.WriteLine("Delta Gradient");
-                //Utils.PrintWeights(deltaWeightGradient);
+                
+                //for (int j = 0; j < deltaWeightGradient.Length; j++)
+                //{
+                //    string str = "";
+                //    for (int k = 0; k < deltaWeightGradient[j].Length; k++)
+                //        for (int l = 0; l < deltaWeightGradient[j][k].Length; l++)
+                //            str += deltaWeightGradient[j][k][l] + ", ";
+                //    print?.Invoke(str);
+                //}
+
+               
+
 
                 Utils.AddWeights(weightGradient, deltaWeightGradient);
                 Utils.AddBiases(biasGradient, deltaBiasGradient);
             }
-
-            //Console.WriteLine("Before");
-            //Utils.PrintWeights(_weights);
-
-            //Console.WriteLine("Gradient");
-            //Utils.PrintWeights(weightGradient);
 
             Utils.SubWeights(_weights, weightGradient, learningRate);
             Utils.SubBiases(_biases, biasGradient, learningRate);
@@ -100,7 +106,7 @@ namespace NeuralNetwork
             //Utils.PrintWeights(_weights);
         }
 
-        private Network BackProp(float[] inputs, float[] outputs)
+        private Network BackProp(float[] inputs, float[] outputs, Action<object> print)
         {
             float[][][] deltaWeights = Utils.FillWeightArray(_layerConfiguration, (i, j, k) => 0);
             float[][] deltaBiases = Utils.FillBiasArray(_layerConfiguration, (i, j) => 0);

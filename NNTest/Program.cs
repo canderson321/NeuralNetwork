@@ -47,7 +47,7 @@ namespace NetTest
 
             int numInputs = 100;
             float[] inputs = new float[numInputs];
-            Network network = new Network(new int[] { numInputs, 10, 1 });
+            Network network = new Network(new int[] { numInputs, 1 });
             int active = 0;
             for (int i = 0; i < numInputs; i++) inputs[i] = 0;
 
@@ -61,7 +61,7 @@ namespace NetTest
 
                 float expectedOutput = (float)active / numInputs / 2.0f + 0.25f;
 
-                network.ApplyTrainingData(inputs, new float[] { expectedOutput }, 0.1f);
+                network.ApplyTrainingData(inputs, new float[] { expectedOutput }, 0.7f);
 
                 float transformedResult = (network.FeedForward(inputs)[0] - 0.25f) * numInputs * 2.0f;
                 error += Math.Abs(active - transformedResult);
@@ -77,7 +77,9 @@ namespace NetTest
                     Console.WriteLine("\tError: " + error / 10000);
                     error = 0;
                 }
+                //break;
             }
+            Console.ReadKey(true);
         }
     }
 }
