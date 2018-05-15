@@ -32,13 +32,7 @@ public class VehicleDriver : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-        if(_isPlayerControlled != IsPlayerControlled)
-        {
-            _isPlayerControlled = IsPlayerControlled;
-            DoUpdate = IsPlayerControlled ? (Action)PlayerUpdate : (Action)AIUpdate;
-        }
-
-        if (DoUpdate != null) DoUpdate();
+        
 
     }
 
@@ -52,6 +46,14 @@ public class VehicleDriver : MonoBehaviour {
             cam.rotation = transform.rotation;
             cam.Rotate(25, 0, 0, Space.Self);
         }
+
+        if (_isPlayerControlled != IsPlayerControlled)
+        {
+            _isPlayerControlled = IsPlayerControlled;
+            DoUpdate = IsPlayerControlled ? (Action)PlayerUpdate : (Action)AIUpdate;
+        }
+
+        if (DoUpdate != null) DoUpdate();
     }
 
     private void PlayerUpdate()
@@ -140,7 +142,7 @@ public class VehicleDriver : MonoBehaviour {
             Vector3 toNext = track.Nodes[next] - track.Nodes[curr];
             float deltaAngle = Vector3.Angle(fromLast, toNext);
             if (Vector3.Cross(fromLast, toNext).y >= 0) deltaAngle = -deltaAngle;
-            inputs[4 + i] = deltaAngle / 90f;
+            inputs[4 + i] = deltaAngle / 60f;
 
             if (DebugCar) Debug.DrawRay(track.Nodes[curr], track.Nodes[next] - track.Nodes[curr], new Color(0, i / (float)NumLookAheadNodes, 1 - i / (float)NumLookAheadNodes, 1));
 
