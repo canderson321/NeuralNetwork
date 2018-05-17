@@ -32,7 +32,7 @@ public class VehicleDriver : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-        
+        if (DoUpdate != null) DoUpdate();
 
     }
 
@@ -53,7 +53,7 @@ public class VehicleDriver : MonoBehaviour {
             DoUpdate = IsPlayerControlled ? (Action)PlayerUpdate : (Action)AIUpdate;
         }
 
-        if (DoUpdate != null) DoUpdate();
+        
     }
 
     private void PlayerUpdate()
@@ -162,8 +162,8 @@ public class VehicleDriver : MonoBehaviour {
     */
     private void ApplyNetworkOutputs(float[] outputs)
     {
-        vc.DriveValue = outputs[0] * 2;
-        vc.SteerValue = outputs[1] * 2;
+        vc.DriveValue = outputs[0] * 4 - 2;
+        vc.SteerValue = outputs[1] * 4 - 2;
     }
 
     private void GetFitness()
@@ -171,7 +171,7 @@ public class VehicleDriver : MonoBehaviour {
         if (node > lastNode && node - lastNode < 100) network.fitness += (node - lastNode) * 50;
         if (node < lastNode || node - lastNode > 100) network.fitness -= 25;
 
-        network.fitness += relativeVelocity;
+        network.fitness += relativeVelocity * 10;
     }
 
     public void OnCollisionEnter(Collision collision)

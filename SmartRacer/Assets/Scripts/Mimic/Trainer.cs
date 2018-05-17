@@ -23,8 +23,8 @@ public class Trainer : MonoBehaviour {
 
     public int numSamples = 10;
 
-    private float[] angle = new float[] { 0, 0, 0 };
-    private float[] angleDelta = new float[] { 0.001f, 0.002f, 0.003f };
+    private float[] noiseOffsets = new float[] { 100, 200, 300 };
+    private float time;
 
     public List<Transform> OthersArms;
 
@@ -38,7 +38,7 @@ public class Trainer : MonoBehaviour {
         ImageInput.height = ImageHeight;
 
         int numInputs = ImageWidth * ImageHeight * 4;
-        int numOutputs = 2 * arms.Count;
+        int numOutputs = 3 * arms.Count;
         network = new NeuralNetwork.Network(new int[] { numInputs, 12, numOutputs});
     }
 
@@ -56,22 +56,23 @@ public class Trainer : MonoBehaviour {
 
     private float[][] GetData()
     {
-        for (int i = 0; i < 3; i++)
-        {
-            angle[i] += angleDelta[i];
-        }
         float[] coords = new float[3 * arms.Count];
         for(int i = 0; i < arms.Count; i++)
         {
-            //float zRot = UnityEngine.Random.value * 2 * Mathf.PI;
+            float lat = UnityEngine.Random.Range(-Mathf.PI, Mathf.PI);
+            float lon = UnityEngine.Random.Range(-Mathf.PI / 2f, Mathf.PI / 2f);
 
-            float xPos = Mathf.Cos(angle[i]);
-            float yPos = Mathf.Sin(angle[i]);
+            float yPos = Mathf.Sin(lat);
+            float a = 1;// Mathf.Cos(lon);
 
-            arms[i].localPosition = new Vector3(xPos * 3, yPos * 3, 0);
+            float xPos = Mathf.Cos(lat);// * a;
+            float zPos = 0;// Mathf.Sin(lat) * a;
 
-            coords[i * 2 + 0] = xPos / 4f + 0.5f;
-            coords[i * 2 + 1] = yPos / 4f + 0.5f;
+            arms[i].localPosition = new Vector3(xPos * 3, yPos * 3, zPos * 3);
+
+            coords[i * 3 + 0] = xPos / 4f + 0.5f;
+            coords[i * 3 + 1] = yPos / 4f + 0.5f;
+            coords[i * 3 + 2] = zPos / 4f + 0.5f;
         }
 
         captureCamera.Render();
@@ -133,7 +134,7 @@ public class Trainer : MonoBehaviour {
         Debug.Log(str + "    Error: " + error);
         for (int i = 0; i < OthersArms.Count; i++)
         {
-            Vector3 pos = new Vector3((outputs[i * 2 + 0] - 0.5f) * 12, (outputs[i * 2 + 1] - 0.5f) * 12, 0);
+            Vector3 pos = new Vector3((outputs[i * 3 + 0] - 0.5f) * 12, (outputs[i * 3 + 1] - 0.5f) * 12, 0);// (outputs[i * 3 + 2] - 0.5f) * 12);
             OthersArms[i].localPosition = pos;
         }
 

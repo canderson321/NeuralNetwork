@@ -22,7 +22,7 @@ public class VehicleManager : MonoBehaviour {
         Cars = new List<VehicleDriver>();
         pool = new GenePool();
         pool.PoolSize = NumIndividuals;
-        pool.Initialize(new int[] { 17, 10, 10, 10, 2 });
+        pool.Initialize(new int[] { 17, 10, 10, 2 });
 
         for (int i = 0; i < pool.PoolSize; i++)
         {
